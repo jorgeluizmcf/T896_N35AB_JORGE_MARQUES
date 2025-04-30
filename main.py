@@ -201,6 +201,56 @@ def projeto_3():
 
     print("================== FINALIZANDO PROJETO 3 ====================\n")
 
+# Projeto 4 - Segmentação de imagens médicas
+def projeto_4():
+    limpar_terminal()
+    print("================== INICIANDO PROJETO 4 ====================\n")
+
+    inicio = time.time()
+
+    caminho_imagem = 'datasets/projeto_4/Tumor (103).jpg'
+    imagem_original = carregar_imagem(caminho_imagem)
+
+    # Redução de ruído com filtro gaussiano
+    imagem_denoised = cv2.GaussianBlur(imagem_original, (5, 5), 0)
+
+    # Conversão para escala de cinza
+    imagem_cinza = cv2.cvtColor(imagem_denoised, cv2.COLOR_BGR2GRAY)
+
+    # Binarização usando Otsu
+    _, imagem_bin = cv2.threshold(imagem_cinza, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Operações morfológicas
+    kernel = np.ones((3, 3), np.uint8)
+
+    # Abertura (remoção de pequenos ruídos brancos)
+    imagem_abertura = cv2.morphologyEx(imagem_bin, cv2.MORPH_OPEN, kernel)
+
+    # Fechamento (preenchimento de pequenos buracos)
+    imagem_fechamento = cv2.morphologyEx(imagem_abertura, cv2.MORPH_CLOSE, kernel)
+
+    fim = time.time()
+    print(f"[LOG] Tempo de processamento: {fim - inicio:.2f} segundos\n")
+
+    # Exibir resultados
+    imagens = [
+        imagem_original,
+        imagem_denoised,
+        imagem_bin,
+        imagem_abertura,
+        imagem_fechamento
+    ]
+    titulos = [
+        "Imagem Original",
+        "Após Filtro Gaussiano (Redução de Ruído)",
+        "Binarização com Otsu",
+        "Abertura (Morfologia)",
+        "Fechamento (Morfologia)"
+    ]
+    exibir_resultados(imagens, titulos, titulo_geral="Projeto 4 - Pré-processamento")
+
+    print("================== FINALIZANDO PROJETO 4 ====================\n")
+
 # Menu principal
 def menu():
     while True:
@@ -210,7 +260,7 @@ def menu():
         print("1️⃣  Projeto 1 - Recorte e Colagem com fundo verde")
         print("2️⃣  Projeto 2 - Detecção de Círculos")
         print("3️⃣  Projeto 3 - Segmentação de Folha (Regiões Saudáveis e Danificadas)")
-        print("4️⃣  Projeto 4 - (em breve)")
+        print("4️⃣  Projeto 4 - Segmentação de imagens médicas")
         print("0️⃣  Sair\n")
 
         opcao = input("Digite a opção desejada: ").strip()
@@ -225,7 +275,7 @@ def menu():
             projeto_3()
             input("Pressione ENTER para retornar ao menu...")
         elif opcao == '4':
-            print("\n[INFO] Projeto 4 ainda não implementado.")
+            projeto_4()
             input("Pressione ENTER para retornar ao menu...")
         elif opcao == '0':
             print("Encerrando aplicação...")
