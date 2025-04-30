@@ -209,45 +209,38 @@ def projeto_4():
     inicio = time.time()
 
     caminho_imagem = 'datasets/projeto_4/Tumor (103).jpg'
-    imagem_original = carregar_imagem(caminho_imagem)
+    
+    # Garantir que a imagem é lida como escala de cinza (1 canal)
+    imagem_original = cv2.imread(caminho_imagem, cv2.IMREAD_GRAYSCALE)
 
-    # Redução de ruído com filtro gaussiano
-    imagem_denoised = cv2.GaussianBlur(imagem_original, (5, 5), 0)
+    kernel = np.ones((7, 7), np.uint8)
 
-    # Conversão para escala de cinza
-    imagem_cinza = cv2.cvtColor(imagem_denoised, cv2.COLOR_BGR2GRAY)
+    # Dilatação
+    imagem_dilatada = cv2.dilate(imagem_original, kernel, iterations=1)
 
-    # Binarização usando Otsu
-    _, imagem_bin = cv2.threshold(imagem_cinza, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # Binarização com Otsu
+    _, imagem_bin = cv2.threshold(imagem_dilatada, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    
+    # Aplicar máscara para extrair o tumor
+    tumor_extraido = cv2.bitwise_and(imagem_original, imagem_original, mask=imagem_bin)
 
-    # Operações morfológicas
-    kernel = np.ones((3, 3), np.uint8)
-
-    # Abertura (remoção de pequenos ruídos brancos)
-    imagem_abertura = cv2.morphologyEx(imagem_bin, cv2.MORPH_OPEN, kernel)
-
-    # Fechamento (preenchimento de pequenos buracos)
-    imagem_fechamento = cv2.morphologyEx(imagem_abertura, cv2.MORPH_CLOSE, kernel)
 
     fim = time.time()
     print(f"[LOG] Tempo de processamento: {fim - inicio:.2f} segundos\n")
 
-    # Exibir resultados
     imagens = [
         imagem_original,
-        imagem_denoised,
+        imagem_dilatada,
         imagem_bin,
-        imagem_abertura,
-        imagem_fechamento
+        tumor_extraido
     ]
     titulos = [
-        "Imagem Original",
-        "Após Filtro Gaussiano (Redução de Ruído)",
+        "Imagem Original (Cinza)",
+        "Dilatação",
         "Binarização com Otsu",
-        "Abertura (Morfologia)",
-        "Fechamento (Morfologia)"
+        "Tumor Recortado da Imagem"
     ]
-    exibir_resultados(imagens, titulos, titulo_geral="Projeto 4 - Pré-processamento")
+    exibir_resultados(imagens, titulos)
 
     print("================== FINALIZANDO PROJETO 4 ====================\n")
 
