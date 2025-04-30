@@ -48,7 +48,7 @@ def exibir_resultados(imagens, titulos, titulo_geral="Resultado"):
 # Projeto 1 - Remoção de fundo verde e composição
 def projeto_1():
     limpar_terminal()
-    print("================== INICIANDO PROJETO 1 ====================")
+    print("================== INICIANDO PROJETO 1 ====================\n")
 
     inicio = time.time()
 
@@ -82,13 +82,14 @@ def projeto_1():
 
     fim = time.time()
     print(f"[LOG] Tempo de duração dos processamentos de imagem: {fim - inicio:.2f} segundos")
+    print(f"[HINT] Feche a imagem gerada para continuar...\n")
 
     exibir_resultados(
         [img, background, resultado_final],
         ["Imagem com fundo verde", "Imagem background", "Resultado Final - Pessoa sobre Background"]
     )
 
-    print("================== FINALIZANDO PROJETO 1 ====================")
+    print("================== FINALIZANDO PROJETO 1 ====================\n")
 
 
 # Projeto 2 - Detecção de Círculos
@@ -157,6 +158,7 @@ def projeto_2():
         fim = time.time()
         print(f"[LOG] {exemplo['nome']} - Tempo de processamento: {fim - inicio:.2f} segundos")
         print(f"[LOG] {exemplo['nome']} - Círculos detectados: {contador}\n")
+        print(f"[HINT] Feche a imagem gerada para continuar...\n")
 
         exibir_resultados(
             [imagem_original, imagem_resultado],
@@ -193,6 +195,7 @@ def projeto_3():
 
     fim = time.time()
     print(f"[LOG] Tempo de processamento: {fim - inicio:.2f} segundos\n")
+    print(f"[HINT] Feche a imagem gerada para continuar...\n")
 
     exibir_resultados(
         [imagem_original, regiao_saudavel, regiao_danificada],
@@ -227,6 +230,7 @@ def projeto_4():
 
     fim = time.time()
     print(f"[LOG] Tempo de processamento: {fim - inicio:.2f} segundos\n")
+    print(f"[HINT] Feche a imagem gerada para continuar...\n")
 
     imagens = [
         imagem_original,
