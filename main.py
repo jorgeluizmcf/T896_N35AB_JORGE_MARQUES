@@ -254,9 +254,9 @@ def menu():
         limpar_terminal()
         exibir_cabecalho()
         print("\nEscolha o projeto a executar:")
-        print("1️⃣  Projeto 1 - Recorte e Colagem com fundo verde")
-        print("2️⃣  Projeto 2 - Detecção de Círculos")
-        print("3️⃣  Projeto 3 - Segmentação de Folha (Regiões Saudáveis e Danificadas)")
+        print("1️⃣  Projeto 1 - Chroma Key")
+        print("2️⃣  Projeto 2 - Detecção de objetos circulares")
+        print("3️⃣  Projeto 3 - Detecção de Folhas Saudáveis e Danificadas")
         print("4️⃣  Projeto 4 - Segmentação de imagens médicas")
         print("0️⃣  Sair\n")
 
