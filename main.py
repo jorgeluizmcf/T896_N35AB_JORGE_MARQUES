@@ -166,6 +166,40 @@ def projeto_2():
 
     print("================== FINALIZANDO PROJETO 2 ====================\n")
 
+# Projeto 3 - Segmentação de Folha (Regiões Saudáveis e Danificadas)
+def projeto_3():
+    limpar_terminal()
+    print("================== INICIANDO PROJETO 3 ====================\n")
+
+    inicio = time.time()
+
+    caminho_imagem = 'datasets/projeto_3/img_folha_4.JPG'
+    imagem_original = carregar_imagem(caminho_imagem)
+    imagem_hsv = cv2.cvtColor(imagem_original, cv2.COLOR_BGR2HSV)
+
+    # Tresholds definidos de forma empírica (tentativa e erro)
+    # Segmentação da região saudável (tons de verde)
+    lower_healthy = np.array([40, 10, 10])
+    upper_healthy = np.array([85, 255, 255])
+    mascara_saudavel = cv2.inRange(imagem_hsv, lower_healthy, upper_healthy)
+    regiao_saudavel = cv2.bitwise_and(imagem_original, imagem_original, mask=mascara_saudavel)
+
+    # Tresholds definidos de forma empírica (tentativa e erro)
+    # Segmentação da região danificada (tons escuros/marrom)
+    lower_danificada = np.array([5, 80, 0])
+    upper_danificada = np.array([30, 255, 200])
+    mascara_danificada = cv2.inRange(imagem_hsv, lower_danificada, upper_danificada)
+    regiao_danificada = cv2.bitwise_and(imagem_original, imagem_original, mask=mascara_danificada)
+
+    fim = time.time()
+    print(f"[LOG] Tempo de processamento: {fim - inicio:.2f} segundos\n")
+
+    exibir_resultados(
+        [imagem_original, regiao_saudavel, regiao_danificada],
+        ["Imagem Original", "Região Saudável (Verde)", "Região Danificada (Escura)"]
+    )
+
+    print("================== FINALIZANDO PROJETO 3 ====================\n")
 
 # Menu principal
 def menu():
@@ -175,7 +209,7 @@ def menu():
         print("\nEscolha o projeto a executar:")
         print("1️⃣  Projeto 1 - Recorte e Colagem com fundo verde")
         print("2️⃣  Projeto 2 - Detecção de Círculos")
-        print("3️⃣  Projeto 3 - (em breve)")
+        print("3️⃣  Projeto 3 - Segmentação de Folha (Regiões Saudáveis e Danificadas)")
         print("4️⃣  Projeto 4 - (em breve)")
         print("0️⃣  Sair\n")
 
@@ -188,7 +222,7 @@ def menu():
             projeto_2()
             input("\nPressione ENTER para retornar ao menu...")
         elif opcao == '3':
-            print("\n[INFO] Projeto 3 ainda não implementado.")
+            projeto_3()
             input("Pressione ENTER para retornar ao menu...")
         elif opcao == '4':
             print("\n[INFO] Projeto 4 ainda não implementado.")
