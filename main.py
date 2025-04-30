@@ -34,14 +34,15 @@ def carregar_imagem(caminho):
     return cv2.imread(caminho)
 
 # Plot resultado com subplot
-def exibir_resultados(imagens, titulos):
+def exibir_resultados(imagens, titulos, titulo_geral="Resultado"):
     plt.figure(figsize=(14, 6))
+    plt.suptitle(titulo_geral, fontsize=16, fontweight='bold')
     for i, (img, titulo) in enumerate(zip(imagens, titulos)):
         plt.subplot(1, len(imagens), i + 1)
         plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         plt.title(titulo)
         plt.axis('off')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.show()
 
 # Projeto 1 - Remoção de fundo verde e composição
@@ -93,52 +94,77 @@ def projeto_1():
 # Projeto 2 - Detecção de Círculos
 def projeto_2():
     limpar_terminal()
-    print("================== INICIANDO PROJETO 2 ====================")
+    print("================== INICIANDO PROJETO 2 ====================\n")
 
-    inicio = time.time()
+    exemplos = [
+        {
+            "nome": "Exemplo 1",
+            "caminho_imagem": 'datasets/projeto_2/circulos_1.png',
+            # Os parâmetros foram testados e definidos de forma empírica, alterando e validando os resultados
+            "parametros": {
+                "dp": 1.0,
+                "minDist": 50,
+                "param1": 100,
+                "param2": 40,
+                "minRadius": 50,
+                "maxRadius": 100
+            }
+        },
+        {
+            "nome": "Exemplo 2",
+            "caminho_imagem": 'datasets/projeto_2/red-cherries-arranged-circular-frame-blue-background.jpg',
+            # Os parâmetros foram testados e definidos de forma empírica, alterando e validando os resultados
+            "parametros": {
+                "dp": 1.0,
+                "minDist": 50,
+                "param1": 100,
+                "param2": 40,
+                "minRadius": 60,
+                "maxRadius": 130
+            }
+        }
+    ]
 
-    # Carregar imagem
-    imagem_original = carregar_imagem('datasets/projeto_2/circulos_1.png')
-    imagem_cinza = cv2.cvtColor(imagem_original, cv2.COLOR_BGR2GRAY)
-    
-    # Suavização
-    imagem_suavizada = cv2.medianBlur(imagem_cinza, 5)
+    for exemplo in exemplos:
+        print(f"[LOG] {exemplo['nome']} - Iniciando processamento")
+        inicio = time.time()
 
-    # Detecção de círculos com HoughCircles
-    circulos = cv2.HoughCircles(
-        imagem_suavizada,
-        cv2.HOUGH_GRADIENT,
-        dp=1.2,
-        minDist=30,
-        param1=100,
-        param2=30,
-        minRadius=20,
-        maxRadius=60
-    )
+        imagem_original = carregar_imagem(exemplo["caminho_imagem"])
+        imagem_cinza = cv2.cvtColor(imagem_original, cv2.COLOR_BGR2GRAY)
+        imagem_suavizada = cv2.medianBlur(imagem_cinza, 5)
 
-    imagem_resultado = imagem_original.copy()
-    contador = 0
+        circulos = cv2.HoughCircles(
+            imagem_suavizada,
+            cv2.HOUGH_GRADIENT,
+            dp=exemplo["parametros"]["dp"],
+            minDist=exemplo["parametros"]["minDist"],
+            param1=exemplo["parametros"]["param1"],
+            param2=exemplo["parametros"]["param2"],
+            minRadius=exemplo["parametros"]["minRadius"],
+            maxRadius=exemplo["parametros"]["maxRadius"]
+        )
 
-    if circulos is not None:
-        circulos = np.round(circulos[0, :]).astype("int")
-        contador = len(circulos)
+        imagem_resultado = imagem_original.copy()
+        contador = 0
 
-        for (x, y, r) in circulos:
-            cv2.circle(imagem_resultado, (x, y), r, (0, 255, 0), 2)
-            cv2.circle(imagem_resultado, (x, y), 2, (0, 0, 255), 3)
+        if circulos is not None:
+            circulos = np.round(circulos[0, :]).astype("int")
+            contador = len(circulos)
+            for (x, y, r) in circulos:
+                cv2.circle(imagem_resultado, (x, y), r, (0, 255, 0), 2)
+                cv2.circle(imagem_resultado, (x, y), 2, (0, 0, 255), 3)
 
-    fim = time.time()
+        fim = time.time()
+        print(f"[LOG] {exemplo['nome']} - Tempo de processamento: {fim - inicio:.2f} segundos")
+        print(f"[LOG] {exemplo['nome']} - Círculos detectados: {contador}\n")
 
-    print(f"[LOG] Tempo de duração do processamento: {fim - inicio:.2f} segundos")
-    print(f"[LOG] Quantidade de círculos detectados: {contador}")
+        exibir_resultados(
+            [imagem_original, imagem_resultado],
+            ["Imagem Original", f"Imagem com Círculos Detectados ({contador})"],
+            titulo_geral=exemplo["nome"]
+        )
 
-    # Mostrar resultados
-    exibir_resultados(
-        [imagem_original, imagem_resultado],
-        ["Imagem Original", f"Imagem com Círculos Detectados ({contador})"]
-    )
-
-    print("================== FINALIZANDO PROJETO 2 ====================")
+    print("================== FINALIZANDO PROJETO 2 ====================\n")
 
 
 # Menu principal
@@ -148,7 +174,7 @@ def menu():
         exibir_cabecalho()
         print("\nEscolha o projeto a executar:")
         print("1️⃣  Projeto 1 - Recorte e Colagem com fundo verde")
-        print("2️⃣  Projeto 2 - (em breve)")
+        print("2️⃣  Projeto 2 - Detecção de Círculos")
         print("3️⃣  Projeto 3 - (em breve)")
         print("4️⃣  Projeto 4 - (em breve)")
         print("0️⃣  Sair\n")
