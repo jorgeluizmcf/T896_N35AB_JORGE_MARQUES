@@ -15,19 +15,21 @@ def limpar_terminal():
 # Cabeçalho e título
 def exibir_cabecalho():
     ascii_art = r"""
-  _____          _           _ _                 _           ___     ______            ____  ____ ___ 
- |_   _| __ __ _| |__   __ _| | |__   ___     __| | ___     / \ \   / /___ \          |  _ \|  _ \_ _|
-   | || '__/ _` | '_ \ / _` | | '_ \ / _ \   / _` |/ _ \   / _ \ \ / /  __) |  _____  | |_) | | | | | 
-   | || | | (_| | |_) | (_| | | | | | (_) | | (_| |  __/  / ___ \ V /  / __/  |_____| |  __/| |_| | | 
-   |_||_|  \__,_|_.__/ \__,_|_|_| |_|\___/   \__,_|\___| /_/   \_\_/  |_____|         |_|   |____/___|
-                                                                                                      
+  _______        _           _ _                 _            __      ______             _____  _____ _____ 
+ |__   __|      | |         | | |               | |          /\ \    / /___ \           |  __ \|  __ \_   _|
+    | |_ __ __ _| |__   __ _| | |__   ___     __| | ___     /  \ \  / /  __) |  ______  | |__) | |  | || |  
+    | | '__/ _` | '_ \ / _` | | '_ \ / _ \   / _` |/ _ \   / /\ \ \/ /  |__ <  |______| |  ___/| |  | || |  
+    | | | | (_| | |_) | (_| | | | | | (_) | | (_| |  __/  / ____ \  /   ___) |          | |    | |__| || |_ 
+    |_|_|  \__,_|_.__/ \__,_|_|_| |_|\___/   \__,_|\___| /_/    \_\/   |____/           |_|    |_____/_____|
+                                                                                                                                                                                                             
     """
     print(ascii_art)
-    print("==================================================")
-    print("Aluno: Jorge Luiz Marques da Costa Filho (2127467)")
+    print("=======================================================")
+    print("Alunos: Jorge Luiz Marques da Costa Filho (2127467)")
+    print("        Dalton Linconl Saraiva Damasceno Lima (2225913)\n")
     print("Professora: Lyndainês Araújo dos Santos")
     print("Turma: N896-09")
-    print("==================================================")
+    print("=======================================================")
 
 # Carrega imagem
 def carregar_imagem(caminho):
@@ -45,208 +47,9 @@ def exibir_resultados(imagens, titulos, titulo_geral="Resultado"):
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.show()
 
-# Projeto 1 - Remoção de fundo verde e composição
-def projeto_1():
-    limpar_terminal()
-    print("================== INICIANDO PROJETO 1 ====================\n")
-
-    inicio = time.time()
-
-    img = carregar_imagem('datasets/projeto_1/img_fundo_verde_1.jpg')
-    background = carregar_imagem('datasets/projeto_1/WhatsApp Image 2025-04-29 at 20.18.32.jpeg')
-
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    lower_green = np.array([35, 40, 40])
-    upper_green = np.array([85, 255, 255])
-    mask = cv2.inRange(hsv, lower_green, upper_green)
-    mask_inv = cv2.bitwise_not(mask)
-    result_rgb = cv2.bitwise_and(img, img, mask=mask_inv)
-
-    b, g, r = cv2.split(result_rgb)
-    alpha = mask_inv
-    rgba = cv2.merge((b, g, r, alpha))
-    recorte = rgba
-
-    background_resized = cv2.resize(background, (recorte.shape[1], recorte.shape[0]))
-    b, g, r, a = cv2.split(recorte)
-    overlay_rgb = cv2.merge((b, g, r))
-    alpha = a.astype(float) / 255
-
-    foreground = overlay_rgb.astype(float)
-    background_f = background_resized.astype(float)
-
-    for c in range(3):
-        background_f[:, :, c] = alpha * foreground[:, :, c] + (1 - alpha) * background_f[:, :, c]
-
-    resultado_final = background_f.astype(np.uint8)
-
-    fim = time.time()
-    print(f"[LOG] Tempo de duração dos processamentos de imagem: {fim - inicio:.2f} segundos")
-    print(f"[HINT] Feche a imagem gerada para continuar...\n")
-
-    exibir_resultados(
-        [img, background, resultado_final],
-        ["Imagem com fundo verde", "Imagem background", "Resultado Final - Pessoa sobre Background"]
-    )
-
-    print("================== FINALIZANDO PROJETO 1 ====================\n")
-
-
-# Projeto 2 - Detecção de Círculos
-def projeto_2():
-    limpar_terminal()
-    print("================== INICIANDO PROJETO 2 ====================\n")
-
-    exemplos = [
-        {
-            "nome": "Exemplo 1",
-            "caminho_imagem": 'datasets/projeto_2/circulos_1.png',
-            # Os parâmetros foram testados e definidos de forma empírica, alterando e validando os resultados
-            "parametros": {
-                "dp": 1.0,
-                "minDist": 50,
-                "param1": 100,
-                "param2": 40,
-                "minRadius": 50,
-                "maxRadius": 100
-            }
-        },
-        {
-            "nome": "Exemplo 2",
-            "caminho_imagem": 'datasets/projeto_2/red-cherries-arranged-circular-frame-blue-background.jpg',
-            # Os parâmetros foram testados e definidos de forma empírica, alterando e validando os resultados
-            "parametros": {
-                "dp": 1.0,
-                "minDist": 50,
-                "param1": 100,
-                "param2": 40,
-                "minRadius": 60,
-                "maxRadius": 130
-            }
-        }
-    ]
-
-    for exemplo in exemplos:
-        print(f"[LOG] {exemplo['nome']} - Iniciando processamento")
-        inicio = time.time()
-
-        imagem_original = carregar_imagem(exemplo["caminho_imagem"])
-        imagem_cinza = cv2.cvtColor(imagem_original, cv2.COLOR_BGR2GRAY)
-        imagem_suavizada = cv2.medianBlur(imagem_cinza, 5)
-
-        circulos = cv2.HoughCircles(
-            imagem_suavizada,
-            cv2.HOUGH_GRADIENT,
-            dp=exemplo["parametros"]["dp"],
-            minDist=exemplo["parametros"]["minDist"],
-            param1=exemplo["parametros"]["param1"],
-            param2=exemplo["parametros"]["param2"],
-            minRadius=exemplo["parametros"]["minRadius"],
-            maxRadius=exemplo["parametros"]["maxRadius"]
-        )
-
-        imagem_resultado = imagem_original.copy()
-        contador = 0
-
-        if circulos is not None:
-            circulos = np.round(circulos[0, :]).astype("int")
-            contador = len(circulos)
-            for (x, y, r) in circulos:
-                cv2.circle(imagem_resultado, (x, y), r, (0, 255, 0), 2)
-                cv2.circle(imagem_resultado, (x, y), 2, (0, 0, 255), 3)
-
-        fim = time.time()
-        print(f"[LOG] {exemplo['nome']} - Tempo de processamento: {fim - inicio:.2f} segundos")
-        print(f"[LOG] {exemplo['nome']} - Círculos detectados: {contador}\n")
-        print(f"[HINT] Feche a imagem gerada para continuar...\n")
-
-        exibir_resultados(
-            [imagem_original, imagem_resultado],
-            ["Imagem Original", f"Imagem com Círculos Detectados ({contador})"],
-            titulo_geral=exemplo["nome"]
-        )
-
-    print("================== FINALIZANDO PROJETO 2 ====================\n")
-
-# Projeto 3 - Segmentação de Folha (Regiões Saudáveis e Danificadas)
-def projeto_3():
-    limpar_terminal()
-    print("================== INICIANDO PROJETO 3 ====================\n")
-
-    inicio = time.time()
-
-    caminho_imagem = 'datasets/projeto_3/img_folha_4.JPG'
-    imagem_original = carregar_imagem(caminho_imagem)
-    imagem_hsv = cv2.cvtColor(imagem_original, cv2.COLOR_BGR2HSV)
-
-    # Tresholds definidos de forma empírica (tentativa e erro)
-    # Segmentação da região saudável (tons de verde)
-    lower_healthy = np.array([40, 10, 10])
-    upper_healthy = np.array([85, 255, 255])
-    mascara_saudavel = cv2.inRange(imagem_hsv, lower_healthy, upper_healthy)
-    regiao_saudavel = cv2.bitwise_and(imagem_original, imagem_original, mask=mascara_saudavel)
-
-    # Tresholds definidos de forma empírica (tentativa e erro)
-    # Segmentação da região danificada (tons escuros/marrom)
-    lower_danificada = np.array([5, 80, 0])
-    upper_danificada = np.array([30, 255, 200])
-    mascara_danificada = cv2.inRange(imagem_hsv, lower_danificada, upper_danificada)
-    regiao_danificada = cv2.bitwise_and(imagem_original, imagem_original, mask=mascara_danificada)
-
-    fim = time.time()
-    print(f"[LOG] Tempo de processamento: {fim - inicio:.2f} segundos\n")
-    print(f"[HINT] Feche a imagem gerada para continuar...\n")
-
-    exibir_resultados(
-        [imagem_original, regiao_saudavel, regiao_danificada],
-        ["Imagem Original", "Região Saudável (Verde)", "Região Danificada (Escura)"]
-    )
-
-    print("================== FINALIZANDO PROJETO 3 ====================\n")
-
-# Projeto 4 - Segmentação de imagens médicas
-def projeto_4():
-    limpar_terminal()
-    print("================== INICIANDO PROJETO 4 ====================\n")
-
-    inicio = time.time()
-
-    caminho_imagem = 'datasets/projeto_4/Tumor (103).jpg'
-    
-    # Garantir que a imagem é lida como escala de cinza (1 canal)
-    imagem_original = cv2.imread(caminho_imagem, cv2.IMREAD_GRAYSCALE)
-
-    kernel = np.ones((7, 7), np.uint8)
-
-    # Dilatação
-    imagem_dilatada = cv2.dilate(imagem_original, kernel, iterations=1)
-
-    # Binarização com Otsu
-    _, imagem_bin = cv2.threshold(imagem_dilatada, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    
-    # Aplicar máscara para extrair o tumor
-    tumor_extraido = cv2.bitwise_and(imagem_original, imagem_original, mask=imagem_bin)
-
-
-    fim = time.time()
-    print(f"[LOG] Tempo de processamento: {fim - inicio:.2f} segundos\n")
-    print(f"[HINT] Feche a imagem gerada para continuar...\n")
-
-    imagens = [
-        imagem_original,
-        imagem_dilatada,
-        imagem_bin,
-        tumor_extraido
-    ]
-    titulos = [
-        "Imagem Original (Cinza)",
-        "Dilatação",
-        "Binarização com Otsu",
-        "Tumor Recortado da Imagem"
-    ]
-    exibir_resultados(imagens, titulos)
-
-    print("================== FINALIZANDO PROJETO 4 ====================\n")
+# Função principal para restauração das imagens
+def restaurar_imagem():
+    return print("Gerar função aqui...")
 
 # Menu principal
 def menu():
@@ -254,26 +57,14 @@ def menu():
         limpar_terminal()
         exibir_cabecalho()
         print("\nEscolha o projeto a executar:")
-        print("1️⃣  Projeto 1 - Chroma Key")
-        print("2️⃣  Projeto 2 - Detecção de objetos circulares")
-        print("3️⃣  Projeto 3 - Detecção de Folhas Saudáveis e Danificadas")
-        print("4️⃣  Projeto 4 - Segmentação de imagens médicas")
+        print("1️⃣  Iniciar restauração de retrato.")
         print("0️⃣  Sair\n")
 
         opcao = input("Digite a opção desejada: ").strip()
 
         if opcao == '1':
-            projeto_1()
+            restaurar_imagem()
             input("\nPressione ENTER para retornar ao menu...")
-        elif opcao == '2':
-            projeto_2()
-            input("\nPressione ENTER para retornar ao menu...")
-        elif opcao == '3':
-            projeto_3()
-            input("Pressione ENTER para retornar ao menu...")
-        elif opcao == '4':
-            projeto_4()
-            input("Pressione ENTER para retornar ao menu...")
         elif opcao == '0':
             print("Encerrando aplicação...")
             break
