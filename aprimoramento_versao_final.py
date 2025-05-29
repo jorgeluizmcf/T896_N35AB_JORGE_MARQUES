@@ -11,7 +11,9 @@ def aprimorar_imagem():
     dataset_path = 'datasets/'
 
     # Lista de imagens com extensões comuns
-    image_files = [f for f in os.listdir(dataset_path) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+    image_files = sorted(
+        [f for f in os.listdir(dataset_path) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+    )
 
     for img_name in image_files:
         img_path = os.path.join(dataset_path, img_name)
@@ -57,3 +59,6 @@ def aprimorar_imagem():
 
         plt.tight_layout()
         plt.show()
+
+if __name__ == "__main__":
+    aprimorar_imagem()
