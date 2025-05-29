@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import time
 import os
 import sys
+from aprimoramento_versao_final import aprimorar_imagem
 
 # Suprime mensagens desnecessárias
 sys.stderr = open(os.devnull, 'w')
@@ -31,9 +32,6 @@ def exibir_cabecalho():
     print("Turma: N896-09")
     print("=======================================================")
 
-# Carrega imagem
-def carregar_imagem(caminho):
-    return cv2.imread(caminho)
 
 # Plot resultado com subplot
 def exibir_resultados(imagens, titulos, titulo_geral="Resultado"):
@@ -47,9 +45,8 @@ def exibir_resultados(imagens, titulos, titulo_geral="Resultado"):
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.show()
 
-# Função principal para restauração das imagens
-def restaurar_imagem():
-    return print("Gerar função aqui...")
+
+    
 
 # Menu principal
 def menu():
@@ -63,7 +60,7 @@ def menu():
         opcao = input("Digite a opção desejada: ").strip()
 
         if opcao == '1':
-            restaurar_imagem()
+            aprimorar_imagem()
             input("\nPressione ENTER para retornar ao menu...")
         elif opcao == '0':
             print("Encerrando aplicação...")
