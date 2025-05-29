@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from teste2 import enhance_image  # Sua função de realce morfológico
+from enhace_image import enhance_image  # Sua função de realce morfológico
 
 # Caminho para o diretório com as imagens
 dataset_path = 'datasets/'
